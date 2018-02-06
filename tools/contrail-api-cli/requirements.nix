@@ -5,8 +5,7 @@
 #   pypi2nix -V 2.7 -e contrail-api-cli-extra
 #
 
-{ pkgs ? import <nixpkgs> {}
-}:
+{ contrailPkgs, pkgs ? import <nixpkgs> {} }:
 
 let
 
@@ -195,7 +194,7 @@ let
       };
     };
 
-
+    "gremlin-fsck" = contrailPkgs.tools.contrailGremlin.python;
 
     "datrie" = python.mkDerivation {
       name = "datrie-0.7.1";
