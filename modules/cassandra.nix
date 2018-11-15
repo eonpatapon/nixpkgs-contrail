@@ -85,12 +85,21 @@ in {
     };
   };
   config = mkIf cfg.enable {
+
+    # WARN  o.a.cassandra.utils.SigarLibrary - Cassandra server running in degraded mode. Is swap disabled? : true,  Address space adequate? : true,  nofile limit adequate? : false, nproc limit adequate? : false
+    # for nproc/nofile limit
+    boot.kernel.sysctl = {
+      "vm.max_map_count" = 1048575;
+      "fs.file-max" = 100000;
+    };
+
     systemd.services.cassandra = {
       wantedBy = [ "multi-user.target" ];
       after = [ "network.target" ];
       path = [ cassandraPkg ];
-      serviceConfig= {
-        TimeoutSec="infinity";
+      serviceConfig = {
+        TimeoutSec = "infinity";
+        LimitNOFILE = "100000";
       };
       environment = {
         CASSANDRA_CONFIG = cassandraConfigDir;
@@ -99,9 +108,9 @@ in {
         mkdir -p /tmp/cassandra-data/
         chmod a+w /tmp/cassandra-data
         export CASSANDRA_CONF=${cassandraConfigDir}
-        export JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.port=7199"
-        export JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl=false"
-        export JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.authenticate=false"
+        export JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.remote.port=7199"
+        export JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.remote.ssl=false"
+        export JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.remote.authenticate=false"
         ${cassandraPkg}/bin/cassandra -f -R
       '';
       postStart = ''
@@ -109,7 +118,6 @@ in {
         while ! ${cassandraPkg}/bin/nodetool status >/dev/null 2>&1; do
           sleep 2
         done
-
         ${cfg.postStart}
       '';
     };
