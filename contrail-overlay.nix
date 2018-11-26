@@ -126,7 +126,6 @@ let
     vrouterModuleNixos_4_9 = lself.lib.buildVrouter self.linuxPackages_4_9.kernel.dev;
 
     # config
-    discovery = callPackage ./pkgs/discovery.nix { };
     apiServer = callPackage ./pkgs/api-server.nix { };
     svcMonitor = callPackage ./pkgs/svc-monitor.nix { };
     schemaTransformer = callPackage ./pkgs/schema-transformer.nix { };
@@ -164,6 +163,7 @@ in {
     contrailSources = callPackage ./sources-R3.2.nix { };
     contrailThirdPartyCache = super.contrailThirdPartyCache.overrideAttrs(oldAttrs:
       { outputHash = "1x0kgr2skq17lh5anwimlfjy1yzc8vhz5cmyraxg4hqig1g599sf"; });
+    discovery = self.callPackage ./pkgs/discovery.nix { };
     tools.databaseLoader = callPackage ./tools/contrail-database-loader.nix { contrailPkgs = self; };
   });
 
