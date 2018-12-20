@@ -37,7 +37,9 @@ let
     $machine->waitForUnit("zookeeper.service");
     $machine->waitForUnit("redis.service");
 
+  '' + optionalString contrailPkgs.isContrail32 ''
     $machine->waitForUnit("contrail-discovery.service");
+  '' + ''
     $machine->waitForUnit("contrail-api.service");
     $machine->waitForUnit("contrail-svc-monitor.service");
     $machine->waitForUnit("contrail-schema-transformer.service");

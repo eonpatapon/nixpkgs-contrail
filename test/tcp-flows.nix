@@ -43,7 +43,9 @@ let
     $machine->waitForUnit("rabbitmq.service");
     $machine->waitForUnit("zookeeper.service");
 
+  '' + optionalString contrailPkgs.isContrail32 ''
     $machine->waitForUnit("contrail-discovery.service");
+  '' + ''
     $machine->waitForUnit("contrail-api.service");
     $machine->waitForUnit("contrail-schema-transformer.service");
     $machine->waitForUnit("contrail-control.service");
