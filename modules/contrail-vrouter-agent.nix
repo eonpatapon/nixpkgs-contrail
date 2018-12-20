@@ -130,9 +130,9 @@ in {
                 sleep 2
               done
             '';
-            script = if cfg.configurationFilepath == ""
+            script = if cfg.configFile == ""
               then "${contrailPkgs.vrouterAgent}/bin/contrail-vrouter-agent --config_file ${agentConf}"
-              else "${contrailPkgs.vrouterAgent}/bin/contrail-vrouter-agent --config_file ${cfg.configurationFilepath}";
+              else "${contrailPkgs.vrouterAgent}/bin/contrail-vrouter-agent --config_file ${cfg.configFile}";
           }
           (mkIf cfg.autoStart { wantedBy = [ "multi-user.target" ]; })
         ];
