@@ -126,6 +126,7 @@ in {
             path = [ pkgs.netcat ];
             preStart = ''
               mkdir -p /var/log/contrail/
+            '' + optionalString contrailPkgs.isContrail32 ''
               while ! nc -vz ${cfg.discoveryHost} 5998; do
                 sleep 2
               done
