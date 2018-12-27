@@ -63,7 +63,7 @@ let
     contrailThirdPartyCache = callPackage ./pkgs/third-party-cache.nix { };
     contrailThirdParty = callPackage ./pkgs/third-party.nix { };
     contrailController = callPackage ./pkgs/controller.nix { };
-    contrailWorkspace = callPackage ./pkgs/workspace.nix { stdenv = stdenv_gcc5; };
+    contrailWorkspace = callPackage ./pkgs/workspace.nix { };
     contrailPythonBuild = callPackage ./pkgs/python-build.nix { stdenv = stdenv_gcc5; };
 
     lib = {

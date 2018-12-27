@@ -13,12 +13,8 @@ with pkgs.lib;
 stdenv.mkDerivation rec {
   name = "contrail-workspace";
   version = contrailVersion;
-  buildInputs = contrailBuildInputs;
   USER = "contrail";
-  # Only required on R4.1
-  dontUseCmakeConfigure = true;
-
-  phases = [ "unpackPhase" "patchPhase" "configurePhase" "buildPhase" "installPhase" "fixupPhase" ];
+  phases = [ "unpackPhase" "patchPhase" "configurePhase" "installPhase" "fixupPhase" ];
 
   # We don't override the patchPhase to be nix-shell compliant
   preUnpack = ''mkdir workspace || exit; cd workspace'';
@@ -54,16 +50,6 @@ stdenv.mkDerivation rec {
     # GenerateDS crashes woth python 2.7.14 while it works with python 2.7.13
     # See https://bugs.launchpad.net/opencontrail/+bug/1721039
     sed -i 's/        parser.parse(infile)/        parser.parse(StringIO.StringIO(infile.getvalue()))/' tools/generateds/generateDS.py
-  '';
-
-  # build sandesh here to avoid building it multiple times in control, vrouterAgent, etc...
-  buildPhase = "" + optionalString isContrail41 ''
-    scons -j1 --optimization=production tools/sandesh/library/common
-    ln -sf ../../third_party/rapidjson/include/rapidjson build/include
-    ln -sf ../../third_party/tbb-2018_U5/include/tbb build/include
-    ln -sf ../../../third_party/openvswitch-2.3.0/include build/include/openvswitch
-    ln -sf ../../../third_party/openvswitch-2.3.0/lib build/include/openvswitch
-    ln -sf ../../third_party/SimpleAmqpClient/src/SimpleAmqpClient build/include
   '';
 
   installPhase = "mkdir $out; cp -r ./ $out";
