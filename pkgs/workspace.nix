@@ -13,7 +13,9 @@ with pkgs.lib;
 stdenv.mkDerivation rec {
   name = "contrail-workspace";
   version = contrailVersion;
-  USER = "contrail";
+  buildInputs = contrailBuildInputs;
+  dontUseCmakeConfigure = true;
+
   phases = [ "unpackPhase" "patchPhase" "configurePhase" "installPhase" "fixupPhase" ];
 
   # We don't override the patchPhase to be nix-shell compliant
