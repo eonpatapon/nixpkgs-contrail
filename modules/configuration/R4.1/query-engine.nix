@@ -9,12 +9,7 @@ pkgs.writeTextFile {
     log_file = /var/log/contrail/query-engine.log
     use_syslog = 1
 
-    cassandra_server_list = 127.0.0.1:9042
-
     collectors = 127.0.0.1:8086
-
-    [REDIS]
-    server = 127.0.0.1
-    port = 6379
+    cassandra_server_list = 127.0.0.1:9042
   '';
 }
