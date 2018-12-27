@@ -10,9 +10,5 @@ pkgs.writeTextFile {
     use_syslog = 1
 
     collectors = 127.0.0.1:8086
-
-    [CONFIGDB]
-    rabbitmq_server_list = localhost:5672
-    config_db_server_list = localhost:9042
   '';
 }
