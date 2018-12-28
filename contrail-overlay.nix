@@ -38,11 +38,6 @@ let
       # Global build deps
       libkrb5 openssl libxml2 perl curl
       lself.log4cplus
-      (boost155.override{
-        buildPackages.stdenv.cc = gcc5;
-        stdenv = stdenv_gcc5;
-        enablePython = true;
-      })
       # api-server
       pythonPackages.lxml pythonPackages.pip
       # To get xxd binary required by sandesh
@@ -157,13 +152,20 @@ let
 
 in {
 
-  contrail32 = contrail.overrideScope' (self: super: {
+  contrail32 = contrail.overrideScope' (lself: lsuper: {
     contrailVersion = "3.2";
     contrailSources = callPackage ./sources-R3.2.nix { };
-    contrailThirdPartyCache = super.contrailThirdPartyCache.overrideAttrs(oldAttrs:
+    contrailThirdPartyCache = lsuper.contrailThirdPartyCache.overrideAttrs(oldAttrs:
       { outputHash = "1x0kgr2skq17lh5anwimlfjy1yzc8vhz5cmyraxg4hqig1g599sf"; });
-    discovery = self.callPackage ./pkgs/discovery.nix { };
-    tools.databaseLoader = callPackage ./tools/contrail-database-loader.nix { contrailPkgs = self; };
+    discovery = lself.callPackage ./pkgs/discovery.nix { };
+    tools.databaseLoader = callPackage ./tools/contrail-database-loader.nix { contrailPkgs = lself; };
+    contrailBuildInputs = with self; lsuper.contrailBuildInputs ++ [
+      (boost155.override{
+        buildPackages.stdenv.cc = gcc5;
+        stdenv = stdenv_gcc5;
+        enablePython = true;
+      })
+    ];
   });
 
   contrail41 = contrail.overrideScope' (lself: lsuper: {
@@ -171,6 +173,11 @@ in {
     contrailSources = callPackage ./sources-R4.1.nix { };
     contrailBuildInputs = with self; lsuper.contrailBuildInputs ++ [
       cmake rabbitmq-c gperftools
+      (boost159.override{
+        buildPackages.stdenv.cc = gcc5;
+        stdenv = stdenv_gcc5;
+        enablePython = true;
+      })
     ];
     contrailThirdPartyCache = lsuper.contrailThirdPartyCache.overrideAttrs(oldAttrs:
       { outputHash = "0wnwz787mwhfabqnwckp1y00sqma6f86r9p107bqgqldyn2xxz0v"; });
