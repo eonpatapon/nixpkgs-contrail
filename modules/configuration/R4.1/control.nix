@@ -9,6 +9,7 @@ pkgs.writeTextFile {
     log_file = /var/log/contrail/control.log
     use_syslog = 1
 
+    hostip = 0.0.0.0
     collectors = 127.0.0.1:8086
   '';
 }

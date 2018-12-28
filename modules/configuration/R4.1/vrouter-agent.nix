@@ -14,7 +14,7 @@ pkgs.writeTextFile {
     collectors = 127.0.0.1:8086
 
     [CONTROL-NODE]
-    servers = 192.168.1.1:5269
+    servers = 127.0.0.1:5269
 
     [VIRTUAL-HOST-INTERFACE]
     name = vhost0
