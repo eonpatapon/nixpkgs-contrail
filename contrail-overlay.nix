@@ -38,7 +38,6 @@ let
       # Global build deps
       libkrb5 openssl libxml2 perl curl
       lself.log4cplus
-      (tbb.override{stdenv = stdenv_gcc5;})
       (boost155.override{
         buildPackages.stdenv.cc = gcc5;
         stdenv = stdenv_gcc5;

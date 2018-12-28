@@ -23,6 +23,7 @@ stdenv.mkDerivation rec {
     mkdir -p $out/{bin,etc/contrail}
     cp build/production/control-node/contrail-control $out/bin/
     cp ${contrailWorkspace}/controller/src/control-node/contrail-control.conf $out/etc/contrail/
+    cp -r build/lib $out/
   '';
 }
 

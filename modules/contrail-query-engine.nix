@@ -41,7 +41,7 @@ in {
           "contrail-discovery.service"
         ];
         preStart = "mkdir -p /var/log/contrail/";
-        script = "${contrailPkgs.queryEngine}/bin/qed --conf_file ${cfg.configFile}";
+        script = "${contrailPkgs.queryEngine}/bin/contrail-query-engine --conf_file ${cfg.configFile}";
       }
       (mkIf cfg.autoStart { wantedBy = [ "multi-user.target" ]; })
     ];

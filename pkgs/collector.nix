@@ -34,5 +34,6 @@ stdenv.mkDerivation rec {
     mkdir -p $out/{bin,etc/contrail}
     cp build/production/analytics/vizd $out/bin/contrail-collector
     cp ${contrailWorkspace}/controller/src/analytics/contrail-collector.conf $out/etc/contrail/
+    cp -r build/lib $out/
   '';
 }
