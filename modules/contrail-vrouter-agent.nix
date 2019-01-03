@@ -21,6 +21,10 @@ let
       routes = mkOption {
         type = types.str;
       };
+      masquerade = mkOption {
+        type = types.bool;
+        default = true;
+      };
     };
   };
 
@@ -150,9 +154,14 @@ in {
                 sleep 2
               done
               # creates global-vrouter-config
-              contrail-api-cli --ns contrail_api_cli.provision -H ${cfg.apiHost} set-encaps MPLSoGRE MPLSoUDP VXLAN
+              # contrail-api-cli --ns contrail_api_cli.provision -H ${cfg.apiHost} set-encaps MPLSoGRE MPLSoUDP VXLAN
+              ${contrailPkgs.configUtils}/bin/provision_linklocal.py --api_server_ip ${cfg.apiHost} \
+                --api_server_port 8082 --oper add --linklocal_service_name metadata --linklocal_service_ip 169.254.169.254 \
+                --linklocal_service_port 80 --ipfabric_service_ip 192.168.1.1 --ipfabric_service_port 8775
               # adds virtual-router
-              contrail-api-cli --ns contrail_api_cli.provision -H ${cfg.apiHost} add-vrouter --vrouter-ip ${cfg.vhostIP} $HOSTNAME
+              ${contrailPkgs.configUtils}/bin/provision_vrouter.py --api_server_ip ${cfg.apiHost} \
+                --api_server_port 8082 --oper add --host_name $HOSTNAME --host_ip ${cfg.vhostIP}
+              # contrail-api-cli --ns contrail_api_cli.provision -H ${cfg.apiHost} add-vrouter --vrouter-ip ${cfg.vhostIP} $HOSTNAME
             '';
           }
           (mkIf cfg.autoStart { wantedBy = [ "multi-user.target" ]; })
@@ -199,7 +208,7 @@ in {
             serviceConfig.RemainAfterExit = true;
             after = [ "contrail-vrouter-agent.service" ];
             requires = [ "contrail-vrouter-agent.service" ];
-            path = [ pkgs.netcat ];
+            path = with pkgs; [ netcat iptables ];
             script = ''
               while ! nc -vz localhost 9091; do
                 sleep 2
@@ -207,6 +216,8 @@ in {
               ${contrailPkgs.configUtils}/bin/provision_vgw_interface.py --oper create \
                   --interface vgw --subnets ${gw.networkCIDR} --routes ${gw.routes} \
                   --vrf "default-domain:${gw.projectName}:${gw.networkName}:${gw.networkName}"
+            '' + optionalString gw.masquerade ''
+              iptables -t nat -A POSTROUTING -s ${gw.networkCIDR} -j MASQUERADE
             '';
           }
           (mkIf cfg.autoStart { wantedBy = [ "multi-user.target" ]; })

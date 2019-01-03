@@ -38,7 +38,7 @@ in {
         script = "${contrailPkgs.control}/bin/contrail-control --conf_file ${cfg.configFile}";
         postStart = ''
           ${contrailPkgs.configUtils}/bin/provision_control.py --api_server_ip 127.0.0.1 \
-            --api_server_port 8082  --oper add --host_name $HOSTNAME --host_ip 127.0.0.1 --router_asn 64512
+            --api_server_port 8082 --oper add --host_name $HOSTNAME --host_ip 192.168.1.1 --router_asn 64512
         '';
       }
       (mkIf cfg.autoStart { wantedBy = [ "multi-user.target" ]; })
