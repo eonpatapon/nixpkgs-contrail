@@ -69,8 +69,8 @@ let
       $machine->succeed("contrail-api-cli --ns contrail_api_cli.provision add-vn --project-fqname default-domain:default-project --subnet 20.1.1.0/24 vn1");
       $machine->succeed("netns-daemon-start -n default-domain:default-project:vn1 vm1");
       $machine->succeed("netns-daemon-start -n default-domain:default-project:vn1 vm2");
-      $machine->succeed("contrail-api-cli --ns contrail_api_cli.provision add-sg --project-fqname default-domain:default-project --rule ingress:${mode}:5000:5000: sg1");
-      $machine->succeed("contrail-api-cli --ns contrail_api_cli.provision add-sg --project-fqname default-domain:default-project --rule ingress:${mode}:4900:4900: sg2");
+      $machine->succeed("contrail-api-cli --ns contrail_api_cli.provision add-sg --project-fqname default-domain:default-project --rule ingress:${mode}:5000:5000: --rule egress:${mode}::: allow");
+      $machine->succeed("contrail-api-cli --ns contrail_api_cli.provision add-sg --project-fqname default-domain:default-project --rule egress:${mode}::: deny");
       $machine->succeed("ip netns exec ns-vm1 ip a | grep -q 20.1.1.252");
       $machine->succeed("ip netns exec ns-vm2 ip a | grep -q 20.1.1.251");
     };
@@ -84,8 +84,7 @@ let
     };
 
     subtest "flow dropped by SG", sub {
-      # sg2 allow only port 4900
-      $machine->succeed("contrail-api-cli apply-sg --project-fqname default-domain:default-project machine-vm2-veth0 sg2");
+      $machine->succeed("contrail-api-cli apply-sg --project-fqname default-domain:default-project machine-vm2-veth0 deny");
       $machine->waitUntilSucceeds("flow -l --match 20.1.1.251:5000 | grep 'Action:D(' | wc -l | grep -q 2");
     };
 
@@ -96,8 +95,8 @@ let
     };
 
     subtest "flow allowed by SG", sub {
-      # sg1 allow port 5000
-      $machine->succeed("contrail-api-cli apply-sg --project-fqname default-domain:default-project machine-vm2-veth0 sg1");
+      # allow port 5000
+      $machine->succeed("contrail-api-cli apply-sg --project-fqname default-domain:default-project machine-vm2-veth0 allow");
       $machine->waitUntilSucceeds("flow -l --match 20.1.1.251:5000 | grep 'Action:F,' | wc -l | grep -q 2");
     };
 
