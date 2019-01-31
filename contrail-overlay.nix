@@ -202,6 +202,12 @@ let
       gremlinDump = callPackage ./test/gremlin-dump.nix { contrailPkgs = lself; cassandraDumpPath = minimalDump; };
     };
 
+    image = {
+      allInOne = (import (self.path + /nixos) {
+        configuration = import ./configuration.nix { pkgs = self; contrailPkgs = lself; };
+      }).config.system.build.qcow;
+    };
+
     tools.databaseLoader = callPackage ./tools/contrail-database-loader.nix { contrailPkgs = lself; };
 
   });

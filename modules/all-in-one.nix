@@ -61,7 +61,7 @@ in {
       networking.firewall.enable = false;
 
       services.openssh.enable = true;
-      services.openssh.permitRootLogin = "yes";
+      services.openssh.permitRootLogin = mkDefault "yes";
       services.openssh.extraConfig = "PermitEmptyPasswords yes";
 
       users.users.root = {
