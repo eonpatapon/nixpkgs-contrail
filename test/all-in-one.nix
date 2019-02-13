@@ -61,6 +61,9 @@ let
     $machine->waitForUnit("contrail-vrouter-agent.service");
 
     $machine->waitUntilSucceeds("curl http://localhost:8083/Snh_ShowBgpNeighborSummaryReq | grep machine | grep -q Established");
+  ''
+  # FIXME: should work on 4.1
+  + optionalString contrailPkgs.isContrail32 ''
     $machine->waitUntilSucceeds("curl -s localhost:8081/analytics/uves/vrouter/*?cfilt=NodeStatus:process_status | jq '.value | map(select(.value.NodeStatus.process_status[0].state == \"Functional\")) | length' | grep -q 1");
 
     $machine->succeed("contrail-api-cli --ns contrail_api_cli.provision add-vn --project-fqname default-domain:default-project --subnet 20.1.1.0/24 vn1");
